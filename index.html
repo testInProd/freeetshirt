@@ -1,77 +1,234 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
- 		    <title>Under Contruction - free tshirts are coming soon</title>
-		<style>
-			:root{--radius:14px}
-			html,body{height:100%}
-			body{
-				margin:0;
-				font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-				/* background image (covers full viewport) */
-				background-image: url('https://images.unsplash.com/photo-1520975911664-4c6f41a1d5c6?auto=format&fit=crop&w=1400&q=80');
-				background-size:cover;
-				background-position:center;
-				background-repeat:no-repeat;
-				display:flex;
-				align-items:center;
-				justify-content:center;
-			}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>freeeTshirt</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind to use Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-green': '#10b981', // Emerald 500
+                        'primary-hover': '#059669', // Emerald 600
+                        'primary-press': '#047857', // Emerald 700
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Set up Inter font and basic body styling */
+        @import url('https://fonts.fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
 
-			/* dim the background and center the modal */
-			.overlay{
-				position:fixed;
-				inset:0;
-				background:rgba(0,0,0,0.45);
-				display:flex;
-				align-items:center;
-				justify-content:center;
-				padding:1.25rem;
-			}
+        body {
+            font-family: 'Inter', sans-serif;
+        }
 
-			.modal{
-				background:rgba(255,255,255,0.98);
-				border-radius:var(--radius);
-				padding:2rem 2.25rem;
-				max-width:680px;
-				width:100%;
-				box-shadow:0 10px 30px rgba(0,0,0,0.35);
-				text-align:center;
-			}
+        /* --- Custom Animations --- */
 
-			.modal h1{
-				margin:0 0 0.75rem 0;
-				font-size:clamp(1.25rem,2.5vw,2rem);
-				line-height:1.1;
-				color:#111;
-			}
+        /* Keyframes for the Falling 'e' with Swoosh */
+        @keyframes fall-swoosh {
+            0% {
+                transform: translateY(-25px) rotate(-15deg) skewX(-15deg);
+                opacity: 0;
+                /* Simulate a glow/swoosh trail at the start */
+                text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            }
+            70% {
+                transform: translateY(5px) rotate(5deg) skewX(5deg);
+                opacity: 1;
+                text-shadow: none;
+            }
+            100% {
+                transform: translateY(0) rotate(0deg) skewX(0deg);
+                opacity: 1;
+                text-shadow: none;
+            }
+        }
 
-			.modal p.extra-e{
-				margin:0.5rem 0 0 0;
-				font-size:1.25rem;
-				color:#444;
-				letter-spacing:0.06em;
-				font-weight:600;
-			}
+        .falling-e {
+            display: inline-block; /* Allows transform properties to work */
+            /* Run the animation once when the page loads */
+            animation: fall-swoosh 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s 1;
+            transform-origin: bottom center;
+        }
 
-			/* small visual cue for keyboard users */
-			.modal:focus{outline:3px solid rgba(21,156,228,0.25)}
+        /* --- Button Styling (No wiggle, just lift/press) --- */
 
-			@media (prefers-reduced-motion: no-preference){
-				.modal{transform:translateY(-6px); transition:transform .28s ease,opacity .28s ease; opacity:1}
-			}
-		</style>
-	</head>
-	<body>
-		<div class="overlay" role="presentation">
-			<div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="0">
-				<h1 id="modal-title">Under Contruction</h1>
-                <h2 class="extra-e">free<sub style="color:red; font-size:1rem; font-style:italic">e</sub>tshirts coming soon</h2>
-                <p>👕</p>
-			</div>
-		</div>
-	</body>
+        /* Custom button class for the squishy, wiggling effect */
+        .squishy-button {
+            /* Smooth transitions for all transform/shadow properties */
+            transition: all 0.1s ease-out;
+            /* Default shadow for a 3D effect */
+            box-shadow: 0 8px 0 0 #047857, 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            transform: translateY(0);
+        }
+
+        /* Lift slightly on light touch (hover/focus) */
+        .squishy-button:hover, .squishy-button:focus {
+            /* Lift slightly */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 0 0 #047857, 0 12px 20px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Firm press required (active state) */
+        .squishy-button:active {
+            /* Push down, creating the "firm press" feel */
+            transform: translateY(8px) scale(0.98);
+            /* Squish the button's vertical shadow */
+            box-shadow: 0 0px 0 0 #047857, 0 5px 10px -3px rgba(0, 0, 0, 0.2);
+            /* Stop any potential animation during the press */
+            animation: none;
+        }
+
+        /* --- Modal Styling --- */
+        .modal-container {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transform: translateY(0);
+            transition: transform 0.3s ease-in-out;
+        }
+        .modal-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-container.hidden .modal-content {
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Nav Bar Consistent on All Pages (Header) -->
+    <header class="bg-white shadow-md w-full">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-primary-green tracking-tight">
+                free<sub class="text-xl">e</sub>tshirt
+            </h1>
+            <nav>
+                <!-- Since it's a single-page concept, navigation is simple -->
+                <a href="#home" class="text-gray-600 hover:text-primary-green transition duration-150">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white p-8 md:p-12 rounded-2xl shadow-xl max-w-lg w-full text-center">
+            
+            <!-- Welcome Message and Subscript 'e' -->
+            <h2 class="text-5xl md:text-6xl font-extrabold text-gray-800 mb-4 leading-tight">
+                Welcome to free<sub class="text-3xl text-primary-green falling-e">e</sub>tshirt
+            </h2>
+
+            <!-- Slogan -->
+            <p class="text-lg md:text-xl text-gray-500 mb-8 italic">
+                "the e is free like the shirt"
+            </p>
+            
+            <!-- The Big Squishy Green Button -->
+            <button id="okayButton"
+                    class="squishy-button
+                           bg-primary-green hover:bg-primary-hover active:bg-primary-press 
+                           text-white font-black text-3xl py-4 px-16 rounded-xl 
+                           tracking-wider uppercase cursor-pointer w-full max-w-xs focus:outline-none mb-4">
+                Okay
+            </button>
+
+            <!-- Link to open the modal -->
+            <button id="openModalButton" class="text-sm text-gray-500 hover:text-primary-green transition duration-150 focus:outline-none">
+                (View Offer Details)
+            </button>
+
+            <!-- Hidden message box for output -->
+            <div id="messageBox" class="mt-8 p-4 bg-primary-green/10 text-primary-green rounded-lg hidden">
+                <!-- Message will appear here -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer (consistent element) -->
+    <footer class="w-full bg-gray-200 text-center p-3 text-sm text-gray-500">
+        &copy; 2025 freeeTshirt - All Rights Reserved.
+    </footer>
+
+    <!-- Offer Modal -->
+    <div id="offerModal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" onclick="closeModal(event)">
+        <div class="modal-content bg-white p-6 md:p-8 rounded-xl shadow-2xl max-w-sm w-full" onclick="event.stopPropagation()">
+            <h3 class="text-3xl font-bold text-gray-800 mb-4 border-b pb-2">Your Free Shirt Offer</h3>
+            
+            <!-- Main Offer -->
+            <p class="text-lg text-gray-700 mb-6">
+                🎉 **Buy your first shirt, get a free shirt!**
+            </p>
+
+            <!-- Donation Option -->
+            <div class="text-center mb-8 border-t pt-4">
+                <p class="text-base text-gray-500 italic">
+                    — Or, you can choose to **donate the free shirt** to charity.
+                </p>
+            </div>
+
+            <button onclick="closeModal()" 
+                    class="w-full py-3 bg-primary-green text-white font-semibold rounded-lg hover:bg-primary-hover transition duration-200 focus:outline-none">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const okayButton = document.getElementById('okayButton');
+        const messageBox = document.getElementById('messageBox');
+        const offerModal = document.getElementById('offerModal');
+        const openModalButton = document.getElementById('openModalButton');
+        
+        // Function to show feedback in the custom message box
+        function showMessage(text) {
+            messageBox.textContent = text;
+            messageBox.classList.remove('hidden');
+            // Hide the message after 3 seconds
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Open Modal function
+        function openModal() {
+            offerModal.classList.remove('hidden');
+            // Force reflow for transition
+            void offerModal.offsetWidth; 
+            offerModal.style.opacity = '1';
+        }
+
+        // Close Modal function
+        function closeModal(event) {
+            // Only close if the click is on the backdrop or the close button
+            if (!event || event.target === offerModal || event.target.closest('button')) {
+                offerModal.style.opacity = '0';
+                setTimeout(() => {
+                    offerModal.classList.add('hidden');
+                }, 300); // Wait for transition to finish
+            }
+        }
+
+        // Event listener for the "firm press" command
+        okayButton.addEventListener('click', () => {
+            console.log('Command Sent: User confirmed the primary action.');
+            showMessage('Command sent! Preparing your free shirt order...');
+        });
+
+        // Event listener to trigger the modal
+        openModalButton.addEventListener('click', openModal);
+
+    </script>
+</body>
 </html>
-
