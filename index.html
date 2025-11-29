@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>freeeTshirt</title>
+    
     <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
     <!-- Configure Tailwind to use Inter font and custom colors --><script>
         tailwind.config = {
             theme: {
@@ -16,6 +18,8 @@
                         'primary-green': '#10b981', // Emerald 500
                         'primary-hover': '#059669', // Emerald 600
                         'primary-press': '#047857', // Emerald 700
+                        'ocean-blue': '#a7f3d0', // Light green/blue for checkbox background (tailwind emerald-200)
+                        'ocean-checked': '#34d399', // Darker green for checked state (tailwind emerald-400)
                     }
                 }
             }
@@ -112,15 +116,61 @@
         }
 
         /* Custom checkbox style */
-        .custom-checkbox {
+        /* Visually hide the original checkbox input */
+        .shirt-checkbox {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10; /* Ensure checkbox is above image */
-            width: 24px;
-            height: 24px;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none; /* Make it not interfere with custom span clicks */
+        }
+
+        /* Style for the custom visual checkbox */
+        .custom-checkbox-visual {
+            position: absolute;
+            top: 15px; /* Offset from corner */
+            left: 15px; /* Offset from corner */
+            z-index: 10;
+            width: 28px; /* Slightly larger */
+            height: 28px;
+            border-radius: 50%; /* Perfectly round */
+            background-color: theme('colors.ocean-blue'); /* Ocean background color */
+            border: 2px solid theme('colors.primary-green'); /* Border color */
             cursor: pointer;
-            /* Basic styling, Tailwind adds more */
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+        }
+
+        /* Checkmark styling (hidden by default) */
+        .custom-checkbox-visual::after {
+            content: '';
+            position: absolute;
+            width: 8px; /* Checkmark width */
+            height: 14px; /* Checkmark height */
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+            opacity: 0; /* Hidden initially */
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        /* Checked state for the custom visual checkbox */
+        .shirt-checkbox:checked + .custom-checkbox-visual {
+            background-color: theme('colors.primary-green'); /* Darker green when checked */
+            border-color: theme('colors.primary-green');
+        }
+
+        .shirt-checkbox:checked + .custom-checkbox-visual::after {
+            opacity: 1; /* Show checkmark when checked */
+        }
+
+        /* Hover state */
+        .custom-checkbox-visual:hover {
+            transform: scale(1.05); /* Slightly enlarge on hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -179,32 +229,49 @@
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Shirt Card 1: Classic White Tee (Portrait Aspect) --><div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
+                <!-- Shirt Card 1: Classic White Tee (Placeholder: Light BG, Dark Text) -->
+                <div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
                      data-shirt-id="white-tee">
-                    <!-- Checkbox for selection --><input type="checkbox" id="shirt-select-white-tee" class="shirt-checkbox custom-checkbox form-checkbox text-primary-green rounded-md border-gray-300 focus:ring-primary-green" 
+                    <!-- Hidden Checkbox -->
+                    <input type="checkbox" id="shirt-select-white-tee" class="shirt-checkbox" 
                            onchange="toggleShirtSelection('white-tee', this.checked)">
+                    <!-- Custom Visual Checkbox -->
+                    <span class="custom-checkbox-visual" onclick="document.getElementById('shirt-select-white-tee').click()"></span>
                     
-                    <!-- Clickable Image for Detail Modal --><div class="cursor-pointer" onclick="openDetailModal('white-tee')">
+                    <!-- Clickable Image for Detail Modal -->
+                    <div class="cursor-pointer" onclick="openDetailModal('white-tee')">
+                        <!-- Background: e5e7eb (Light), Text: 374151 (Dark) -->
                         <img src="https://placehold.co/300x400/e5e7eb/374151?text=Classic+White+Tee" alt="Classic White T-Shirt" class="w-full h-auto object-cover rounded-lg border border-white shadow-inner border-px">
-                        <h3 class="sr-only">Classic White Tee</h3> <!-- Screen reader only title --></div>
+                        <h3 class="sr-only">Classic White Tee</h3> <!-- Screen reader only title -->
+                    </div>
                 </div>
 
-                <!-- Shirt Card 2: Minimalist Logo Tee (Portrait Aspect) --><div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
+                <!-- Shirt Card 2: Minimalist Logo Tee (Placeholder: Light BG, Very Dark Text) -->
+                <div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
                      data-shirt-id="black-tee">
-                    <input type="checkbox" id="shirt-select-black-tee" class="shirt-checkbox custom-checkbox form-checkbox text-primary-green rounded-md border-gray-300 focus:ring-primary-green" 
+                    <!-- Hidden Checkbox -->
+                    <input type="checkbox" id="shirt-select-black-tee" class="shirt-checkbox" 
                            onchange="toggleShirtSelection('black-tee', this.checked)">
+                    <!-- Custom Visual Checkbox -->
+                    <span class="custom-checkbox-visual" onclick="document.getElementById('shirt-select-black-tee').click()"></span>
                     <div class="cursor-pointer" onclick="openDetailModal('black-tee')">
-                        <img src="https://placehold.co/300x400/1f2937/d1d5db?text=Minimal+Black+Tee" alt="Minimal Black T-Shirt" class="w-full h-auto object-cover rounded-lg border border-white shadow-inner border-px">
+                        <!-- Background: e5e7eb (Light), Text: 1f2937 (Very Dark) -->
+                        <img src="https://placehold.co/300x400/e5e7eb/1f2937?text=Minimal+Black+Tee" alt="Minimal Black T-Shirt" class="w-full h-auto object-cover rounded-lg border border-white shadow-inner border-px">
                         <h3 class="sr-only">Minimal Black Tee</h3>
                     </div>
                 </div>
 
-                <!-- Shirt Card 3: Color Block Tee (Portrait Aspect) --><div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
+                <!-- Shirt Card 3: Color Block Tee (Placeholder: Light BG, Dark Text) -->
+                <div class="relative bg-white p-2 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-[1.02] group" 
                      data-shirt-id="color-block-tee">
-                    <input type="checkbox" id="shirt-select-color-block-tee" class="shirt-checkbox custom-checkbox form-checkbox text-primary-green rounded-md border-gray-300 focus:ring-primary-green" 
+                    <!-- Hidden Checkbox -->
+                    <input type="checkbox" id="shirt-select-color-block-tee" class="shirt-checkbox" 
                            onchange="toggleShirtSelection('color-block-tee', this.checked)">
+                    <!-- Custom Visual Checkbox -->
+                    <span class="custom-checkbox-visual" onclick="document.getElementById('shirt-select-color-block-tee').click()"></span>
                     <div class="cursor-pointer" onclick="openDetailModal('color-block-tee')">
-                        <img src="https://placehold.co/300x400/9ca3af/1f2937?text=Color+Block+Tee" alt="Color Block T-Shirt" class="w-full h-auto object-cover rounded-lg border border-white shadow-inner border-px">
+                        <!-- Background: e5e7eb (Light), Text: 9ca3af (Medium Dark) -->
+                        <img src="https://placehold.co/300x400/e5e7eb/9ca3af?text=Color+Block+Tee" alt="Color Block T-Shirt" class="w-full h-auto object-cover rounded-lg border border-white shadow-inner border-px">
                         <h3 class="sr-only">Color Block Tee</h3>
                     </div>
                 </div>
@@ -219,7 +286,7 @@
                                disabled>
                     Confirm Selection
                 </button>
-                <!-- Removed: <div id="selectionMessage" class="mt-4 text-gray-600 hidden">Please select exactly one shirt.</div> --></div>
+            </div>
         </section>
 
     </main>
@@ -249,27 +316,35 @@
         </div>
     </div>
     
-    <!-- Shirt Detail Modal (New) --><div id="shirtDetailModal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onclick="closeDetailModal(event)">
+    <!-- Shirt Detail Modal (New) -->
+    <div id="shirtDetailModal" class="modal-container hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onclick="closeDetailModal(event)">
         <div class="modal-content bg-white p-6 md:p-8 rounded-xl shadow-2xl max-w-4xl w-full" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center border-b pb-4 mb-4">
                 <h3 id="detailModalTitle" class="text-3xl font-bold text-gray-800">Shirt Title</h3>
-                <!-- Close button --><button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-800 transition duration-150 text-3xl leading-none">&times;</button>
+                <!-- Close button -->
+                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-800 transition duration-150 text-3xl leading-none">&times;</button>
             </div>
             
             <div class="md:grid md:grid-cols-2 gap-8">
-                <!-- Image Gallery --><div class="relative mb-4 md:mb-0">
-                    <!-- Main image placeholder uses 450x600 for clear portrait view --><img id="mainDetailImage" src="" alt="Main Shirt Image" class="w-full h-auto object-cover rounded-lg shadow-md border-4 border-gray-100">
+                <!-- Image Gallery -->
+                <div class="relative mb-4 md:mb-0">
+                    <!-- Main image placeholder uses 450x600 for clear portrait view -->
+                    <img id="mainDetailImage" src="" alt="Main Shirt Image" class="w-full h-auto object-cover rounded-lg shadow-md border-4 border-gray-100">
                     
-                    <!-- Thumbnail Gallery/Toggle (up to 7 images) --><div id="thumbnailContainer" class="flex flex-wrap gap-2 mt-4 justify-center">
-                        <!-- Thumbnails will be populated by JS --></div>
+                    <!-- Thumbnail Gallery/Toggle (up to 7 images) -->
+                    <div id="thumbnailContainer" class="flex flex-wrap gap-2 mt-4 justify-center">
+                        <!-- Thumbnails will be populated by JS -->
+                    </div>
                 </div>
 
-                <!-- Product Details and Selection --><div>
+                <!-- Product Details and Selection -->
+                <div>
                     <p id="detailModalDescription" class="text-gray-600 mb-6 text-lg">Detailed description goes here.</p>
                     
                     <p class="text-xl font-semibold text-gray-800 mb-2">Details:</p>
                     <ul id="detailModalList" class="list-disc list-inside text-gray-600 ml-4 mb-6">
-                        <!-- Details will be populated by JS --></ul>
+                        <!-- Details will be populated by JS -->
+                    </ul>
 
                     <div class="border-t pt-4 flex justify-between items-center">
                         <span id="detailModalPrice" class="text-3xl font-bold text-primary-green">$0.00</span>
@@ -293,7 +368,6 @@
         const shirtsView = document.getElementById('shirtsView');
         const navLinks = document.querySelectorAll('.nav-link');
         const confirmSelectionButton = document.getElementById('confirmSelectionButton');
-        // const selectionMessage = document.getElementById('selectionMessage'); // Removed from HTML
         const shirtCheckboxes = document.querySelectorAll('.shirt-checkbox');
         
         // New Detail Modal Elements
@@ -308,18 +382,24 @@
 
 
         let selectedShirt = null; // Stores the ID of the currently selected shirt
+        
+        // --- Placeholder Color Constants (Light BG for all, unique Dark Text) ---
+        const UNIFIED_BG = "e5e7eb"; 
+        const WHITE_TEE_TEXT_COLOR = "374151"; // Dark Gray
+        const BLACK_TEE_TEXT_COLOR = "1f2937"; // Very Dark Gray
+        const COLOR_BLOCK_TEXT_COLOR = "9ca3af"; // Medium Dark Gray (to visually differ)
 
-        // Data for the shirts (updated for 3:4 portrait aspect ratio)
+        // Data for the shirts (using unified background and contrasting text)
         const shirtData = {
             'white-tee': {
                 title: 'The Classic White Tee',
                 description: 'Our iconic shirt that started it all. Premium, sustainable cotton blend for maximum comfort.',
                 price: '$29.99',
                 details: ['100% Organic Cotton', 'Available in S-XXL', 'Unisex Fit', 'Machine Washable'],
-                images: [1, 2, 3, 4, 5, 6, 7], // Mock image indices
-                mainImage: "https://placehold.co/450x600/e5e7eb/374151?text=Classic+White+View+1", // 3:4 portrait
-                thumbBase: "https://placehold.co/75x100/e5e7eb/374151?text=View+", // 3:4 portrait thumbnail
-                altColor: "374151"
+                images: [1, 2, 3, 4, 5, 6, 7], 
+                mainImage: `https://placehold.co/450x600/${UNIFIED_BG}/${WHITE_TEE_TEXT_COLOR}?text=Classic+White+View+1`,
+                thumbBase: `https://placehold.co/75x100/${UNIFIED_BG}/${WHITE_TEE_TEXT_COLOR}?text=View+`,
+                altColor: WHITE_TEE_TEXT_COLOR // Text color used for contrast in dynamic thumbnails
             },
             'black-tee': {
                 title: 'The Minimalist Black Tee',
@@ -327,9 +407,9 @@
                 price: '$34.99',
                 details: ['Heavyweight Cotton', 'Embroidered Logo', 'Limited Edition', 'Slimmer Fit'],
                 images: [1, 2, 3, 4, 5, 6, 7],
-                mainImage: "https://placehold.co/450x600/1f2937/d1d5db?text=Minimal+Black+View+1", // 3:4 portrait
-                thumbBase: "https://placehold.co/75x100/1f2937/d1d5db?text=View+", // 3:4 portrait thumbnail
-                altColor: "d1d5db"
+                mainImage: `https://placehold.co/450x600/${UNIFIED_BG}/${BLACK_TEE_TEXT_COLOR}?text=Minimal+Black+View+1`,
+                thumbBase: `https://placehold.co/75x100/${UNIFIED_BG}/${BLACK_TEE_TEXT_COLOR}?text=View+`,
+                altColor: BLACK_TEE_TEXT_COLOR
             },
             'color-block-tee': {
                 title: 'The Bold Color Block',
@@ -337,9 +417,9 @@
                 price: '$39.99',
                 details: ['50/50 Cotton Poly Blend', 'Contrast Collar/Sleeve', 'Athletic Cut', 'Bright, Durable Dyes'],
                 images: [1, 2, 3, 4, 5, 6, 7],
-                mainImage: "https://placehold.co/450x600/9ca3af/1f2937?text=Color+Block+View+1", // 3:4 portrait
-                thumbBase: "https://placehold.co/75x100/9ca3af/1f2937?text=View+", // 3:4 portrait thumbnail
-                altColor: "1f2937"
+                mainImage: `https://placehold.co/450x600/${UNIFIED_BG}/${COLOR_BLOCK_TEXT_COLOR}?text=Color+Block+View+1`,
+                thumbBase: `https://placehold.co/75x100/${UNIFIED_BG}/${COLOR_BLOCK_TEXT_COLOR}?text=View+`,
+                altColor: COLOR_BLOCK_TEXT_COLOR
             }
         };
 
@@ -442,35 +522,37 @@
             
             // Generate thumbnails (7 views total)
             for (let i = 1; i <= 7; i++) {
-                // Use the main image URL for the first view, and a different placeholder for subsequent views
-                const isMainView = i === 1;
-                let thumbURL = isMainView 
-                    ? shirt.thumbBase + i // Use the base mock image for the main view (75x100)
-                    : `https://placehold.co/75x100/${shirt.altColor}/e5e7eb?text=View+${i}`;
+                // Determine the large image URL for the thumbnail's click action
+                // Note: The thumbnail image itself uses the thumbBase format
+                let largeImageURL = i === 1
+                    ? shirt.mainImage.replace('View 1', `View ${i}`) // Use main image URL logic for the larger size
+                    : `https://placehold.co/450x600/${UNIFIED_BG}/${shirt.altColor}?text=View+${i}`;
                 
-                // The URL to load into the large display image when this thumbnail is clicked
-                // Use 450x600 for the large portrait view
-                let largeImageURL = isMainView
-                    ? shirt.mainImage
-                    : `https://placehold.co/450x600/${shirt.altColor}/e5e7eb?text=View+${i}`;
+                let thumbURL = i === 1
+                    ? shirt.thumbBase + i
+                    : `https://placehold.co/75x100/${UNIFIED_BG}/${shirt.altColor}?text=View+${i}`;
 
                 const thumb = document.createElement('img');
                 thumb.src = thumbURL;
                 thumb.alt = `View ${i}`;
                 
                 // Use w-12 h-16 for a portrait thumbnail ratio
-                thumb.className = `w-12 h-16 object-cover rounded cursor-pointer border-2 transition ${isMainView ? 'border-primary-green' : 'border-gray-300 hover:border-primary-green'}`;
+                thumb.className = `w-12 h-16 object-cover rounded cursor-pointer border-2 transition ${i === 1 ? 'border-primary-green' : 'border-gray-300 hover:border-primary-green'}`;
                 
                 // Add click handler to change the main displayed image
                 thumb.onclick = (e) => {
                     updateMainImage(largeImageURL);
                     // Update border to show active thumbnail
-                    thumbnailContainer.querySelectorAll('img').forEach(img => img.classList.remove('border-primary-green', 'border-4'));
+                    thumbnailContainer.querySelectorAll('img').forEach(img => {
+                        img.classList.remove('border-primary-green', 'border-4');
+                        img.classList.add('border-gray-300');
+                    });
+                    e.target.classList.remove('border-gray-300');
                     e.target.classList.add('border-primary-green', 'border-4'); // Use border-4 to make selection clearer
                 };
                 
                 // Initially mark the first thumb as selected
-                if (isMainView) {
+                if (i === 1) {
                     thumb.classList.add('border-4');
                 }
 
@@ -508,7 +590,6 @@
             confirmSelectionButton.disabled = !isOneSelected;
             confirmSelectionButton.classList.toggle('opacity-50', !isOneSelected);
             confirmSelectionButton.classList.toggle('cursor-not-allowed', !isOneSelected);
-            // selectionMessage.classList.toggle('hidden', isOneSelected); // Removed this element
         }
 
         // Handle checkbox change (only handles selection, does not open modal)
@@ -546,7 +627,6 @@
                 showMessage(`You selected the ${selectedShirt} for your free shirt! Proceeding...`); 
             } else {
                 // No specific message now, just that the button remains disabled if nothing is selected
-                // This branch would ideally not be hit if the button is properly disabled
             }
         });
         
